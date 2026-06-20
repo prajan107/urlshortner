@@ -1,3 +1,5 @@
+const { validationResult } =
+require("express-validator");
 const urlService =
     require("../services/urlService");
 
@@ -5,6 +7,13 @@ const urlRepository =
     require("../repositories/urlRepository");
 
 function shortenUrl(req,res,next){
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+        errors: errors.array()
+    });
+}
     
     const originalUrl =
         req.body.url;

@@ -1,3 +1,5 @@
+const { validateUrl } =
+require("./src/validators/urlValidators.js");
 const errorHandler =
 require("./src/middleware/errorHandler");
 const express = require("express");
@@ -12,6 +14,7 @@ app.use(express.static("public"));
 
 app.post(
     "/shorten",
+    validateUrl,
     urlController.shortenUrl
 );
 

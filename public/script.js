@@ -15,8 +15,18 @@ async function shortenURL(){
     const data =
         await response.json();
 
-    document.getElementById("result")
-        .innerHTML =
+    const result =
+        document.getElementById("result");
+
+    if(data.errors){
+
+        result.innerHTML =
+            data.errors[0].msg;
+
+        return;
+    }
+
+    result.innerHTML =
         `<a href="${data.shortUrl}">
             ${data.shortUrl}
         </a>`;
