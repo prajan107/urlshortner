@@ -3,13 +3,20 @@ async function shortenURL(){
     const url =
         document.getElementById("urlInput").value;
 
+    const expiry =
+    document.getElementById("expiry").value;
+
     const response =
         await fetch("/shorten",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"
             },
-            body:JSON.stringify({url})
+            body:JSON.stringify(
+                {url,
+                expiry}
+
+            )
         });
 
     const data =

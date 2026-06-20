@@ -19,14 +19,26 @@ function generateCode(length = 6) {
     return result;
 }
 
-function createShortUrl(originalUrl, callback) {
+function createShortUrl(originalUrl, expiry, callback) {
 
     const shortCode =
         generateCode();
+        let expiresAt = null;
+
+if(expiry !== "0"){
+
+    expiresAt = new Date();
+
+    expiresAt.setDate(
+        expiresAt.getDate() + parseInt(expiry)
+    );
+}
 
     urlRepository.createUrl(
         originalUrl,
         shortCode,
+        expiresAt,
+        
         (err,result)=>{
 
             if(err){
@@ -39,6 +51,13 @@ function createShortUrl(originalUrl, callback) {
             );
         }
     );
+
+
+
+
+
+
+   
 }
 
 module.exports = {

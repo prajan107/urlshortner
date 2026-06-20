@@ -17,16 +17,20 @@ function shortenUrl(req,res,next){
     
     const originalUrl =
         req.body.url;
+    
+    const expiry =
+    req.body.expiry;
 
     urlService.createShortUrl(
         originalUrl,
+        expiry,
         (err,shortCode)=>{
 
             if(err){
-                if(err){
+                
                    return next(err);
-}
-            }
+                }
+        
 
             res.json({
                 shortUrl:
@@ -47,16 +51,27 @@ function redirectUrl(req,res){
 
             if(result.length > 0){
 
-                res.redirect(
-                    result[0].original_url
-                );
+    const url = result[0];
 
-            } else {
+    if(
+        url.expires_at &&
+        new Date() > new Date(url.expires_at)
+    ){
+        return res.send(
+            "Link has expired"
+        );
+    }
 
-                res.send(
-                    "URL Not Found"
-                );
-            }
+    res.redirect(
+        url.original_url
+    );
+
+} else {
+
+    res.send(
+        "URL Not Found"
+    );
+}
         }
     );
 }

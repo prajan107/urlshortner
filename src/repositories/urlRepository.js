@@ -1,12 +1,12 @@
 const db = require("../../db");
 
-function createUrl(originalUrl, shortCode, callback) {
+function createUrl(originalUrl, shortCode, expiresAt, callback) {
     const sql =
-        "INSERT INTO urls (original_url, short_code) VALUES (?, ?)";
+        "INSERT INTO urls (original_url, short_code, expires_at) VALUES (?,?, ?)";
 
     db.query(
         sql,
-        [originalUrl, shortCode],
+        [originalUrl, shortCode, expiresAt ],
         callback
     );
 }
