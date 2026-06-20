@@ -1,3 +1,5 @@
+const errorHandler =
+require("./src/middleware/errorHandler");
 const express = require("express");
 
 const urlController =
@@ -17,6 +19,7 @@ app.get(
     "/:code",
     urlController.redirectUrl
 );
+app.use(errorHandler);
 
 app.listen(3000,()=>{
 

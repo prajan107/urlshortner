@@ -4,8 +4,8 @@ const urlService =
 const urlRepository =
     require("../repositories/urlRepository");
 
-function shortenUrl(req,res){
-
+function shortenUrl(req,res,next){
+    
     const originalUrl =
         req.body.url;
 
@@ -14,9 +14,9 @@ function shortenUrl(req,res){
         (err,shortCode)=>{
 
             if(err){
-                return res
-                    .status(500)
-                    .send(err);
+                if(err){
+                   return next(err);
+}
             }
 
             res.json({
