@@ -1,43 +1,480 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>URL Shortener</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrimLink | Premium URL Shortener & Analytics</title>
+    <meta name="description" content="TrimLink is a developer-focused, high-performance URL shortener to create custom aliases, secure links with expiry, and analyze click metrics.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+    <!-- Subtle background glows for SaaS aesthetic -->
+    <div class="glow-container">
+        <div class="bg-glow glow-primary"></div>
+        <div class="bg-glow glow-accent"></div>
+    </div>
 
-    <h1>URL Shortener</h1>
+    <!-- Professional Sticky Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand" onclick="navigateToHome(event)">
+                <div class="logo-box">
+                    <i data-lucide="link-2" class="logo-icon"></i>
+                </div>
+                <span class="logo-text">TrimLink</span>
+            </a>
 
-    <input
-        type="text"
-        id="urlInput"
-        placeholder="Enter URL">
-        <input
-    type="text"
-    id="customAlias"
-    placeholder="Custom alias (optional)"
->
+            <!-- Navigation Actions -->
+            <nav class="nav-menu">
+                <!-- Anonymous view -->
+                <div id="anonymousNav" class="nav-actions">
+                    <button class="btn btn-ghost" onclick="openAuthModal('login')">Log In</button>
+                    <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Sign Up</button>
+                </div>
 
-<select id="expiry">
-    <option value="1">1 Day</option>
-    <option value="7">7 Days</option>
-    <option value="30">30 Days</option>
-    <option value="0">Never Expire</option>
-</select>
+                <!-- Authenticated view -->
+                <div id="authNav" class="nav-actions hidden">
+                    <div class="profile-dropdown">
+                        <button class="btn btn-secondary profile-trigger" onclick="toggleDropdown()">
+                            <i data-lucide="user" class="btn-icon"></i>
+                            <span id="usernameDisplay">Developer</span>
+                            <i data-lucide="chevron-down" class="dropdown-chevron"></i>
+                        </button>
+                        <div id="profileDropdown" class="dropdown-menu hidden">
+                            <div class="dropdown-header">
+                                <span class="dropdown-label">Signed in as</span>
+                                <span id="userEmailDisplay" class="dropdown-email">user@email.com</span>
+                            </div>
+                            <hr class="dropdown-divider">
+                            <button class="dropdown-item" onclick="scrollToDashboard()">
+                                <i data-lucide="layout-dashboard"></i>
+                                <span>Dashboard</span>
+                            </button>
+                            <button class="dropdown-item logout-item" onclick="handleLogout()">
+                                <i data-lucide="log-out"></i>
+                                <span>Log Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-    <button onclick="shortenURL()">
-        Shorten
-    </button>
+    <!-- Main Content Container -->
+    <main class="main-layout">
+        
+        <!-- SECTION 1: LANDING PAGE (Hidden for authenticated users when in dashboard view, but visible by default) -->
+        <div id="landingView" class="view-section">
+            <!-- Hero Header -->
+            <section class="hero">
+                <a href="#" class="announcement-badge">
+                    <span class="badge-tag">New</span>
+                    <span class="badge-text">TrimLink v1.0 Stable Release</span>
+                    <i data-lucide="arrow-right" class="badge-icon"></i>
+                </a>
+                <h1 class="hero-title">
+                    Shorten Your Links. <br>
+                    <span class="gradient-text">Understand Your Audience.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    A premium, developer-focused link management platform to create shortened URLs, configure custom aliases, secure links, and monitor real-time visitor statistics.
+                </p>
+                <div class="hero-ctas">
+                    <a href="#shortenSection" class="btn btn-primary btn-lg">Shorten Now</a>
+                    <a href="#featuresSection" class="btn btn-secondary btn-lg">Explore Features</a>
+                </div>
+            </section>
 
-    <p id="result"></p>
+            <!-- URL Shortener Section inside Landing Page -->
+            <section id="shortenSection" class="shortener-section">
+                <!-- URL Shortener Card -->
+                <div class="card shortener-card">
+                    <div class="card-glow"></div>
+                    <div class="form-container">
+                        <!-- URL Input Field -->
+                        <div class="form-group">
+                            <div class="input-wrapper input-large">
+                                <i data-lucide="link" class="input-icon"></i>
+                                <input
+                                    type="text"
+                                    id="urlInput"
+                                    placeholder="Paste your long URL here..."
+                                    required
+                                >
+                            </div>
+                        </div>
 
-</div>
+                        <!-- Options Dropdowns Grid -->
+                        <div class="options-grid">
+                            <!-- Custom Alias Option -->
+                            <div class="form-group">
+                                <label for="customAlias" class="form-label">
+                                    <i data-lucide="sparkles"></i>
+                                    <span>Custom Alias</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <span class="prefix-label">trim.lk/</span>
+                                    <input
+                                        type="text"
+                                        id="customAlias"
+                                        placeholder="alias"
+                                    >
+                                </div>
+                            </div>
 
+                            <!-- Expiry Option -->
+                            <div class="form-group">
+                                <label for="expiry" class="form-label">
+                                    <i data-lucide="calendar"></i>
+                                    <span>Expiry Duration</span>
+                                </label>
+                                <div class="select-wrapper">
+                                    <i data-lucide="chevron-down" class="select-chevron"></i>
+                                    <select id="expiry">
+                                        <option value="1">1 Day</option>
+                                        <option value="7">7 Days</option>
+                                        <option value="30">30 Days</option>
+                                        <option value="0">Never Expire</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
+                        <!-- Submit Button -->
+                        <button onclick="shortenURL()" class="btn btn-primary btn-large btn-block" id="shortenBtn">
+                            <span>Shorten Link</span>
+                            <i data-lucide="arrow-right" class="btn-icon-right"></i>
+                        </button>
+                    </div>
 
-<script src="script.js"></script>
+                    <!-- Shortened Result Display Card -->
+                    <div id="resultCard" class="result-card">
+                        <div class="result-info">
+                            <div class="success-icon-badge">
+                                <i data-lucide="check" class="check-icon"></i>
+                            </div>
+                            <div class="result-details">
+                                <span class="result-title">Short link created!</span>
+                                <p id="result" class="result-link"></p>
+                            </div>
+                        </div>
+                        <button id="copyBtn" onclick="copyToClipboard()" class="btn btn-success btn-copy" title="Copy to Clipboard">
+                            <i data-lucide="copy" class="copy-icon"></i>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
 
+            <!-- Features & Benefits Section -->
+            <section id="featuresSection" class="features-section">
+                <div class="section-header">
+                    <span class="section-tag">Benefits</span>
+                    <h2>Engineered for Reliability and Scale</h2>
+                    <p class="section-description">Everything you need to share, control, and measure your hyperlinks effectively.</p>
+                </div>
+
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i data-lucide="zap" class="feature-icon"></i>
+                        </div>
+                        <h3>Instant Redirection</h3>
+                        <p>Zero-latency redirection routing ensures users land on your destination URL immediately.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i data-lucide="clock" class="feature-icon"></i>
+                        </div>
+                        <h3>Flexible Expirations</h3>
+                        <p>Configure self-destructing links that automatically expire after a set time limit for secure sharing.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i data-lucide="bar-chart-3" class="feature-icon"></i>
+                        </div>
+                        <h3>Real-time Tracking</h3>
+                        <p>Access precise analytics detailing total visits and link performance in our client-side dashboard.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECTION 2: AUTHENTICATED DASHBOARD (Hidden for guests, toggled for active sessions) -->
+        <div id="dashboardView" class="view-section hidden">
+            <section class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Developer Dashboard</h1>
+                    <p class="dashboard-subtitle">Manage your shortened URLs and inspect real-time traffic statistics.</p>
+                </div>
+                <button class="btn btn-primary" onclick="scrollToShortener()">
+                    <i data-lucide="plus"></i>
+                    <span>Shorten New Link</span>
+                </button>
+            </section>
+
+            <!-- Statistics Grid -->
+            <section class="stats-grid">
+                <!-- Card 1 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total URLs</span>
+                        <div class="stat-icon-bg primary">
+                            <i data-lucide="link"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-total-urls">0</div>
+                    <div class="stat-desc">Links generated this session</div>
+                </div>
+                <!-- Card 2 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Clicks</span>
+                        <div class="stat-icon-bg success">
+                            <i data-lucide="mouse-pointer-click"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-total-clicks">0</div>
+                    <div class="stat-desc">Accumulated link visits</div>
+                </div>
+                <!-- Card 3 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Active Links</span>
+                        <div class="stat-icon-bg warning">
+                            <i data-lucide="activity"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-active-urls">0</div>
+                    <div class="stat-desc">Available destination routes</div>
+                </div>
+                <!-- Card 4 -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Expired Links</span>
+                        <div class="stat-icon-bg danger">
+                            <i data-lucide="shield-alert"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-expired-urls">0</div>
+                    <div class="stat-desc">Expired redirect routes</div>
+                </div>
+            </section>
+
+            <!-- Main Dashboard Layout Grid -->
+            <section class="dashboard-layout">
+                <!-- Left: Link List Table -->
+                <div class="dashboard-panel links-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">My Shortened Links</h2>
+                        <span class="badge" id="links-count-badge">0 Links</span>
+                    </div>
+
+                    <!-- Links List Empty State -->
+                    <div id="linksEmptyState" class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <i data-lucide="link-2" class="empty-icon"></i>
+                        </div>
+                        <h3>No links shortened yet</h3>
+                        <p>Generate your first shortened link above to unlock real-time dashboard tracking.</p>
+                        <button class="btn btn-secondary btn-sm" onclick="scrollToShortener()">Shorten Link</button>
+                    </div>
+
+                    <!-- Links Table Container -->
+                    <div id="linksTableContainer" class="table-container hidden">
+                        <table class="links-table">
+                            <thead>
+                                <tr>
+                                    <th>Short Link</th>
+                                    <th>Destination URL</th>
+                                    <th>Clicks</th>
+                                    <th>Status</th>
+                                    <th class="actions-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="linksTableBody">
+                                <!-- Dynamically loaded via script.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: Selected Link Details & Analytics Chart -->
+                <div class="dashboard-panel analytics-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Link Insights</h2>
+                    </div>
+
+                    <!-- Details Empty State -->
+                    <div id="analyticsEmptyState" class="empty-state">
+                        <div class="empty-icon-wrapper">
+                            <i data-lucide="bar-chart-3" class="empty-icon"></i>
+                        </div>
+                        <h3>Select a link</h3>
+                        <p>Click on any URL from the links list to view detailed click trends and statistics.</p>
+                    </div>
+
+                    <!-- Details Content (Hidden by default) -->
+                    <div id="analyticsDetailsContent" class="analytics-content hidden">
+                        <div class="selected-link-info">
+                            <div class="link-meta-row">
+                                <span class="meta-label">Short Code:</span>
+                                <span class="meta-value code-value" id="detail-code">xyz123</span>
+                            </div>
+                            <div class="link-meta-row">
+                                <span class="meta-label">Original URL:</span>
+                                <a href="#" target="_blank" class="meta-value link-value" id="detail-original">https://original.com</a>
+                            </div>
+                            <div class="link-meta-row">
+                                <span class="meta-label">Expiration:</span>
+                                <span class="meta-value" id="detail-expiry">Never</span>
+                            </div>
+                        </div>
+
+                        <hr class="panel-divider">
+
+                        <!-- SVG Analytics Chart -->
+                        <div class="chart-container">
+                            <span class="chart-title">Visit Distribution (Mocked click distribution of total)</span>
+                            <div class="svg-chart-wrapper">
+                                <svg viewBox="0 0 400 200" class="svg-chart" id="analyticsChart">
+                                    <!-- Dynamic elements generated in script.js -->
+                                </svg>
+                            </div>
+                            <div class="chart-legend">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Clean Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="logo-text">TrimLink</span>
+                <span class="footer-badge">v1.0.0 Stable</span>
+            </div>
+            <p class="footer-copyright">&copy; 2026 TrimLink. Designed for portfolio visual excellence and maximum performance.</p>
+            <div class="footer-links">
+                <a href="#" onclick="showFooterInfo('documentation', event)" class="footer-link">Documentation</a>
+                <a href="#" onclick="showFooterInfo('api', event)" class="footer-link">API Reference</a>
+                <a href="#" onclick="showFooterInfo('security', event)" class="footer-link">Security</a>
+                <a href="https://github.com/prajan107" target="_blank" class="footer-link">
+                    <i data-lucide="github"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Authenticated Login/Register Modal -->
+    <div id="authModal" class="modal-overlay hidden" onclick="closeAuthModalOnOverlay(event)">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAuthModal()" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+            
+            <div class="modal-tabs">
+                <button id="tab-login" class="modal-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                <button id="tab-register" class="modal-tab" onclick="switchAuthTab('register')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label for="loginEmail" class="form-label">Email Address</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Sign In</span>
+                    <i data-lucide="log-in" class="btn-icon-right"></i>
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form hidden" onsubmit="handleRegisterSubmit(event)">
+                <div class="form-group">
+                    <label for="registerUsername" class="form-label">Username</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user" class="input-icon"></i>
+                        <input type="text" id="registerUsername" placeholder="username" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail" class="form-label">Email Address</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" id="registerEmail" placeholder="name@example.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword" class="form-label">Password</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" id="registerPassword" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Create Account</span>
+                    <i data-lucide="user-plus" class="btn-icon-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Information Modal -->
+    <div id="infoModal" class="modal-overlay hidden" onclick="closeInfoModalOnOverlay(event)">
+        <div class="modal-card" style="max-width: 500px;">
+            <button class="modal-close" onclick="closeInfoModal()" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+            <h2 id="infoModalTitle" class="panel-title" style="margin-bottom: 1.25rem;">Information</h2>
+            <div id="infoModalContent" style="max-height: 350px; overflow-y: auto; padding-right: 0.5rem; font-size: 0.9rem; line-height: 1.6; color: var(--color-zinc-400);">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript Bundle -->
+    <script src="script.js"></script>
+    <script>
+        // Start Lucide Icon rendering
+        lucide.createIcons();
+    </script>
 </body>
 </html>
