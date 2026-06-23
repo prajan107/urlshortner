@@ -1,5 +1,6 @@
 const { validationResult } =
 require("express-validator");
+
 const urlService =
     require("../services/urlService");
 
@@ -20,10 +21,13 @@ function shortenUrl(req,res,next){
     
     const expiry =
     req.body.expiry;
+    const customAlias =
+    req.body.customAlias;
 
     urlService.createShortUrl(
         originalUrl,
         expiry,
+        customAlias,
         (err,shortCode)=>{
 
             if(err){

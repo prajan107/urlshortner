@@ -5,6 +5,8 @@ async function shortenURL(){
 
     const expiry =
     document.getElementById("expiry").value;
+    const customAlias =
+    document.getElementById("customAlias").value;
 
     const response =
         await fetch("/shorten",{
@@ -14,7 +16,8 @@ async function shortenURL(){
             },
             body:JSON.stringify(
                 {url,
-                expiry}
+                expiry,
+                customAlias}
 
             )
         });
@@ -29,6 +32,14 @@ async function shortenURL(){
 
         result.innerHTML =
             data.errors[0].msg;
+
+        return;
+    }
+
+    if(data.message){
+
+        result.innerHTML =
+            data.message;
 
         return;
     }

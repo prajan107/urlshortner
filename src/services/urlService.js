@@ -19,45 +19,69 @@ function generateCode(length = 6) {
     return result;
 }
 
-function createShortUrl(originalUrl, expiry, callback) {
+function createShortUrl(originalUrl, expiry, customAlias, callback) {
+    const alias =
+        typeof customAlias === "string"
+            ? customAlias.trim()
+            : "";
 
     const shortCode =
-        generateCode();
-        let expiresAt = null;
+        alias || generateCode();
 
-if(expiry !== "0"){
+    let expiresAt = null;
 
-    expiresAt = new Date();
+    if(expiry !== "0"){
 
-    expiresAt.setDate(
-        expiresAt.getDate() + parseInt(expiry)
-    );
-}
+        expiresAt = new Date();
 
-    urlRepository.createUrl(
-        originalUrl,
+        expiresAt.setDate(
+            expiresAt.getDate() + parseInt(expiry)
+        );
+    }
+
+    function saveUrl(){
+        urlRepository.createUrl(
+            originalUrl,
+            shortCode,
+            expiresAt,
+            (err,result)=>{
+
+                if(err){
+                    return callback(err);
+                }
+
+                callback(
+                    null,
+                    shortCode
+                );
+            }
+        );
+    }
+
+    if(!alias){
+        return saveUrl();
+    }
+
+    urlRepository.findByCode(
         shortCode,
-        expiresAt,
-        
         (err,result)=>{
 
             if(err){
                 return callback(err);
             }
 
-            callback(
-                null,
-                shortCode
-            );
+            if(result.length > 0){
+                const error =
+                    new Error("Custom alias already exists");
+
+                error.statusCode = 409;
+
+                return callback(error);
+            }
+
+            saveUrl();
         }
     );
-
-
-
-
-
-
-   
 }
 
 module.exports = {
