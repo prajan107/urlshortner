@@ -1,3 +1,5 @@
+const authenticateToken =
+    require("./src/middleware/authMiddleware");
 const userController =
 require("./src/controllers/userController");
 const { validateUrl } =
@@ -26,8 +28,10 @@ app.post(
 );
 
 app.post("/login", userController.login);
+
 app.get(
     "/analytics/:code",
+    authenticateToken,
     urlController.getAnalytics
 );
 
