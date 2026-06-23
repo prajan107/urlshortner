@@ -1,3 +1,12 @@
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: {
+    message: "Too many requests, please try again later."
+  }
+});
+
 const authenticateToken =
     require("./src/middleware/authMiddleware");
 const userController =
@@ -14,6 +23,7 @@ require("./src/controllers/urlController");
 const app = express();
 
 app.use(express.json());
+app.use(limiter);
 app.use(express.static("public"));
 
 app.post(
