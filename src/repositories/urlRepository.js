@@ -18,8 +18,17 @@ function findByCode(code, callback) {
         callback
     );
 }
+function recordVisit(urlId, callback) {
+
+    db.query(
+        "INSERT INTO url_visits (url_id) VALUES (?)",
+        [urlId],
+        callback
+    );
+}
 
 module.exports = {
     createUrl,
-    findByCode
+    findByCode,
+    recordVisit
 };

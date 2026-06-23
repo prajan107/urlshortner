@@ -51,27 +51,39 @@ function redirectUrl(req,res){
 
             if(result.length > 0){
 
-    const url = result[0];
+                const url = result[0];
 
-    if(
-        url.expires_at &&
-        new Date() > new Date(url.expires_at)
-    ){
-        return res.send(
-            "Link has expired"
-        );
-    }
+                if(
+                    url.expires_at &&
+                    new Date() > new Date(url.expires_at)
+                ){
+                    return res.send(
+                        "Link has expired"
+                    );
+                }
 
-    res.redirect(
-        url.original_url
-    );
+                urlRepository.recordVisit(
+                    url.id,
+                    (err) => {
 
-} else {
+                        if(err){
+                            console.error(err);
+                        }
 
-    res.send(
-        "URL Not Found"
-    );
-}
+                    }
+                );
+
+                res.redirect(
+                    url.original_url
+                );
+
+            } else {
+
+                res.send(
+                    "URL Not Found"
+                );
+
+            }
         }
     );
 }
