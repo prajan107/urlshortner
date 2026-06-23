@@ -26,9 +26,26 @@ function recordVisit(urlId, callback) {
         callback
     );
 }
+function getVisitCount(code, callback) {
+
+    const sql = `
+        SELECT COUNT(v.id) AS totalVisits
+        FROM urls u
+        LEFT JOIN url_visits v
+        ON u.id = v.url_id
+        WHERE u.short_code = ?
+    `;
+
+    db.query(
+        sql,
+        [code],
+        callback
+    );
+}
 
 module.exports = {
     createUrl,
     findByCode,
-    recordVisit
+    recordVisit,
+    getVisitCount
 };

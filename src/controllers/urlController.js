@@ -91,8 +91,30 @@ function redirectUrl(req,res){
         }
     );
 }
+function getAnalytics(req,res,next){
+
+    const code =
+        req.params.code;
+
+    urlRepository.getVisitCount(
+        code,
+        (err,result)=>{
+
+            if(err){
+                return next(err);
+            }
+
+            res.json({
+                shortCode: code,
+                totalVisits:
+                    result[0].totalVisits
+            });
+        }
+    );
+}
 
 module.exports = {
     shortenUrl,
-    redirectUrl
+    redirectUrl,
+    getAnalytics
 };

@@ -1,3 +1,5 @@
+const userController =
+require("./src/controllers/userController");
 const { validateUrl } =
 require("./src/validators/urlValidators.js");
 const errorHandler =
@@ -16,6 +18,17 @@ app.post(
     "/shorten",
     validateUrl,
     urlController.shortenUrl
+);
+
+app.post(
+    "/register",
+    userController.register
+);
+
+app.post("/login", userController.login);
+app.get(
+    "/analytics/:code",
+    urlController.getAnalytics
 );
 
 app.get(
