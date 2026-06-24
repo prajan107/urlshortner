@@ -38,7 +38,7 @@ function shortenUrl(req,res,next){
 
             res.json({
                 shortUrl:
-                `http://localhost:3000/${shortCode}`
+                    `${req.protocol}://${req.get("host")}/${shortCode}`
             });
         }
     );
