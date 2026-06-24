@@ -19,4 +19,5 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: url_shortener
-    
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
