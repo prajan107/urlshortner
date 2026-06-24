@@ -46,7 +46,7 @@ async function loginUser(email, password) {
   if (!isMatch) {
     throw new Error("Invalid email or password");
   }
-
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
   const token = jwt.sign(
   {
     id: user.id,
