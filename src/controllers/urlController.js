@@ -50,9 +50,15 @@ function redirectUrl(req,res){
         req.params.code;
 
     urlRepository.findByCode(
-        code,
-        (err,result)=>{
+    code,
+    (err, result) => {
 
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Database Error");
+        }
+
+        if (result && result.length > 0) {
             if(result.length > 0){
 
                 const url = result[0];
@@ -89,7 +95,7 @@ function redirectUrl(req,res){
 
             }
         }
-    );
+ });
 }
 function getAnalytics(req,res,next){
 
