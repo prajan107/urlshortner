@@ -1,6 +1,5 @@
 # TrimLink
-
-A modern URL Shortener built using Node.js, Express.js, MySQL, and Docker. This project allows users to create shortened URLs, manage custom aliases, track analytics, and securely authenticate using JWT.
+A URL shortening service with user authentication, custom aliases, expiry links, analytics, Docker support, and Railway deployment.
 
 ## Features
 
